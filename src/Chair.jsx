@@ -36,6 +36,7 @@ const Chair = () => {
   const { chairId } = useParams();
   const navigate = useNavigate();
   const [customerName, setCustomerName] = useState("");
+  const [barberName, setBarberName] = useState(""); // اسم الفني
   const [selectedServices, setSelectedServices] = useState([]);
   const [services, setServices] = useState([]);
 
@@ -64,13 +65,14 @@ const Chair = () => {
   };
 
   const handleFinish = () => {
-    if (!customerName || selectedServices.length === 0) {
-      alert("من فضلك ادخل اسم الزبون واختر خدمة واحدة على الأقل");
+    if (!customerName || !barberName || selectedServices.length === 0) {
+      alert("من فضلك ادخل اسم الزبون واسم الفني واختر خدمة واحدة على الأقل");
       return;
     }
 
     const invoiceData = {
       customer: customerName,
+      barber: barberName,
       chair: chairId,
       services: selectedServices.map((name) => {
         const service = services.find((s) => s.name === name);
@@ -96,6 +98,14 @@ const Chair = () => {
           className="input input-bordered w-full"
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="اسم الفني"
+          className="input input-bordered w-full"
+          value={barberName}
+          onChange={(e) => setBarberName(e.target.value)}
         />
 
         <div className="bg-base-200 rounded-xl p-4 max-h-[400px] overflow-y-auto">

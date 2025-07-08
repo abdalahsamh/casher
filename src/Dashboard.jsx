@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Settings } from "lucide-react";
+import logo from "./assets/logo.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -10,9 +11,15 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-10">
-        💈  مقص بلال 
-      </h1>
+      {/* ✅ اللوجو */}
+      <div className="flex justify-center mb-4">
+        <img
+          src={logo}
+          alt="Logo"
+          className="h-32 w-auto object-contain mx-auto"
+        />
+      </div>
+      <h1 className="text-3xl font-bold text-center mb-10">💈 مقص بلال</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
         {[1, 2, 3, 4, 5].map((num) => (
