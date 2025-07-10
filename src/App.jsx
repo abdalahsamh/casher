@@ -3,6 +3,7 @@ import Dashboard from "./Dashboard";
 import Chair from "./Chair";
 import Settings from "./Settings";
 import Invoice from "./Invoice";
+import History from "./History"; // ✅ استدعاء الصفحة
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/chair/:chairId" element={<Chair />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/invoice" element={<Invoice />} />
+        <Route path="/history" element={<History />} /> {/* ✅ روت صفحة الهيستوري */}
       </Routes>
     </Router>
   );

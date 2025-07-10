@@ -9,9 +9,17 @@ const Invoice = () => {
   useEffect(() => {
     const stored = localStorage.getItem("lastInvoice");
     if (stored) {
-      setInvoice(JSON.parse(stored));
+      const parsed = JSON.parse(stored);
+
       const randomNum = Math.floor(100000 + Math.random() * 900000);
-      setInvoiceNumber(`INV-${randomNum}`);
+      const finalInvoice = {
+        ...parsed,
+        invoiceNumber: `INV-${randomNum}`,
+        createdAt: new Date().toLocaleString(),
+      };
+
+      setInvoice(finalInvoice);
+      setInvoiceNumber(finalInvoice.invoiceNumber);
     } else {
       alert("لا توجد فاتورة");
       navigate("/");
@@ -19,6 +27,18 @@ const Invoice = () => {
   }, []);
 
   if (!invoice) return null;
+
+  const handlePrintAndSave = () => {
+    window.print();
+
+    const history = JSON.parse(localStorage.getItem("invoiceHistory")) || [];
+    history.push(invoice);
+    localStorage.setItem("invoiceHistory", JSON.stringify(history));
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 text-black flex items-center justify-center print:bg-white">
@@ -30,8 +50,8 @@ const Invoice = () => {
           💈 مقص بلال
         </h2>
 
-        <p>رقم الفاتورة: {invoiceNumber}</p>
-        <p>التاريخ: {new Date().toLocaleString()}</p>
+        <p>رقم الفاتورة: {invoice.invoiceNumber}</p>
+        <p>التاريخ: {invoice.createdAt}</p>
         <p>الكرسي: {invoice.chair}</p>
         <p>الزبون: {invoice.customer}</p>
         <p>الفني: {invoice.barber || "—"}</p>
@@ -39,9 +59,9 @@ const Invoice = () => {
         <div className="my-2 border-t border-dashed" />
 
         <h3 className="font-bold mb-1">الخدمات:</h3>
-        <ul className="mb-2">
+        <ul className="mb-2 divide-y divide-dashed divide-gray-300">
           {invoice.services.map((item, i) => (
-            <li key={i} className="flex justify-between">
+            <li key={i} className="flex justify-between py-1">
               <span>{item.name}</span>
               <span>{item.price} ج</span>
             </li>
@@ -57,7 +77,6 @@ const Invoice = () => {
         </p>
       </div>
 
-      {/* أزرار التحكم خارج الطباعة */}
       <div className="flex justify-between mt-6 gap-4 print:hidden">
         <button
           onClick={() => navigate("/")}
@@ -65,10 +84,7 @@ const Invoice = () => {
         >
           رجوع ↩️
         </button>
-        <button
-          onClick={() => window.print()}
-          className="btn btn-primary btn-sm"
-        >
+        <button onClick={handlePrintAndSave} className="btn btn-primary btn-sm">
           طباعة 🖨️
         </button>
       </div>

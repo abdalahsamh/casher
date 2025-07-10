@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Trash2 } from "lucide-react"; // ✅ أيقونة سلة من مكتبة lucide-react (تأكد إنها مثبتة)
 
 const defaultServices = [
   "قص شعر",
@@ -36,9 +37,11 @@ const Chair = () => {
   const { chairId } = useParams();
   const navigate = useNavigate();
   const [customerName, setCustomerName] = useState("");
-  const [barberName, setBarberName] = useState(""); // اسم الفني
+  const [barberName, setBarberName] = useState("");
   const [selectedServices, setSelectedServices] = useState([]);
   const [services, setServices] = useState([]);
+
+  const defaultNames = defaultServices.map((s) => s.name);
 
   useEffect(() => {
     const storedServices = localStorage.getItem("services");
@@ -79,10 +82,21 @@ const Chair = () => {
         return { name, price: service?.price || 0 };
       }),
       total: calculateTotal(),
+      createdAt: new Date().toLocaleString(),
     };
 
     localStorage.setItem("lastInvoice", JSON.stringify(invoiceData));
     navigate("/invoice");
+  };
+
+  const handleDelete = (name) => {
+    const confirmDelete = window.confirm(`هل تريد حذف "${name}"؟`);
+    if (!confirmDelete) return;
+
+    const updated = services.filter((s) => s.name !== name);
+    setServices(updated);
+    localStorage.setItem("services", JSON.stringify(updated));
+    setSelectedServices((prev) => prev.filter((n) => n !== name));
   };
 
   return (
@@ -116,7 +130,21 @@ const Chair = () => {
                 key={service.name}
                 className="flex items-center justify-between bg-white rounded-lg shadow px-3 py-2 cursor-pointer transition hover:bg-blue-50"
               >
-                <span>{service.name}</span>
+                <div className="flex items-center gap-2">
+                  <span>{service.name}</span>
+                  {!defaultNames.includes(service.name) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(service.name);
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
                 <div className="flex items-center gap-3">
                   <span className="badge badge-info">{service.price}ج</span>
                   <input

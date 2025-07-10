@@ -6,23 +6,23 @@ const defaultServices = [
   "تدريج دقن",
   "حلاقة دقن",
   "صبغة",
-  "استشوار", // ✅ تم التصحيح هنا
+  "استشوار",
   "ويفي",
   "أفرو",
   "حمام مغربي",
   "تنظيف بشرة بالبخار",
   "تنظيف بشرة - ٧ مراحل",
-  "باديكير رجالي", // ✅ التهجئة الأفضل
+  "باديكير رجالي",
   "VIP",
   "حمام كريم",
   "ماسك",
-  "فرد بوتوكس", // ✅ تصحيح كلمة بوتيكس
+  "فرد بوتوكس",
   "بروتين معالج",
   "حمام زيت",
   "جلسة تنظيف قشرة",
   "مساج سوفت",
   "مساج هارد",
-  "فوطة سخنة", // ✅ تهجئة فوطة
+  "فوطة سخنة",
   "مكواة",
   "قص أطفال",
   "شمع (Wax)",
@@ -38,11 +38,18 @@ const Settings = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem("services");
-    if (stored) {
-      setServices(JSON.parse(stored));
-    } else {
-      setServices(defaultServices.map((name) => ({ name, price: 0 })));
-    }
+    let extraServices = stored ? JSON.parse(stored) : [];
+
+    // حذف الخدمات اللي موجودة بالفعل ضمن الأساسيات
+    extraServices = extraServices.filter(
+      (s) => !defaultServices.includes(s.name)
+    );
+
+    const allServices = [
+      ...defaultServices.map((name) => ({ name, price: 0 })),
+      ...extraServices,
+    ];
+    setServices(allServices);
   }, []);
 
   const handlePriceChange = (index, newPrice) => {
@@ -55,6 +62,11 @@ const Settings = () => {
     localStorage.setItem("services", JSON.stringify(services));
     alert("✅ تم حفظ الأسعار");
     navigate("/");
+  };
+
+  const handleResetCounts = () => {
+    localStorage.removeItem("orderCounts");
+    alert("✅ تم تصفير عداد الطلبات");
   };
 
   return (
@@ -88,14 +100,17 @@ const Settings = () => {
           </table>
         </div>
 
-        <div className="flex justify-between gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={() => navigate("/")}
-            className="btn btn-outline w-1/2"
+            className="btn btn-outline w-full sm:w-1/2"
           >
             رجوع ↩️
           </button>
-          <button onClick={handleSave} className="btn btn-success w-1/2">
+          <button
+            onClick={handleSave}
+            className="btn btn-success w-full sm:w-1/2"
+          >
             حفظ الأسعار ✅
           </button>
         </div>
