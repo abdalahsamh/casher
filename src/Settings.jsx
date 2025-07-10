@@ -38,18 +38,18 @@ const Settings = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem("services");
-    let extraServices = stored ? JSON.parse(stored) : [];
 
-    // حذف الخدمات اللي موجودة بالفعل ضمن الأساسيات
-    extraServices = extraServices.filter(
-      (s) => !defaultServices.includes(s.name)
-    );
-
-    const allServices = [
-      ...defaultServices.map((name) => ({ name, price: 0 })),
-      ...extraServices,
-    ];
-    setServices(allServices);
+    if (stored) {
+      // استخدم الأسعار المحفوظة زي ما هي
+      setServices(JSON.parse(stored));
+    } else {
+      // أول مرة فقط: إعداد الخدمات الأساسية بأسعار صفرية
+      const initialServices = defaultServices.map((name) => ({
+        name,
+        price: 0,
+      }));
+      setServices(initialServices);
+    }
   }, []);
 
   const handlePriceChange = (index, newPrice) => {
@@ -87,12 +87,19 @@ const Settings = () => {
                 <tr key={service.name} className="text-center">
                   <td className="py-2">{service.name}</td>
                   <td>
-                    <input
-                      type="number"
-                      className="input input-sm input-bordered w-28"
-                      value={service.price}
-                      onChange={(e) => handlePriceChange(index, e.target.value)}
-                    />
+                    <div className="relative w-fit mx-auto">
+                      <input
+                        type="number"
+                        className="w-32 px-3 py-1.5 rounded-lg border border-gray-300 shadow text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        value={service.price}
+                        onChange={(e) =>
+                          handlePriceChange(index, e.target.value)
+                        }
+                      />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                        ج
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -103,13 +110,13 @@ const Settings = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={() => navigate("/")}
-            className="btn btn-outline w-full sm:w-1/2"
+            className="btn btn-outline w-full sm:w-1/3"
           >
             رجوع ↩️
           </button>
           <button
             onClick={handleSave}
-            className="btn btn-success w-full sm:w-1/2"
+            className="btn btn-success w-full sm:w-1/3"
           >
             حفظ الأسعار ✅
           </button>
